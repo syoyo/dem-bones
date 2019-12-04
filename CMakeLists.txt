@@ -4,6 +4,10 @@ cmake_minimum_required(VERSION 3.15)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_CONFIGURATION_TYPES "Release;" CACHE STRING "" FORCE)
 
+# options
+option(DEM_BONES_WITH_FBX "Enable FBX support." ON)
+option(DEM_BONES_WITH_ALEMBIC "Enable Alembic support." ON)
+
 include_directories("${PROJECT_SOURCE_DIR}/include")
 find_package(Eigen REQUIRED)
 include_directories("${EIGEN_INCLUDE_DIR}")
@@ -27,8 +31,16 @@ add_executable(DemBonesCmd "${CMD_SOURCE}")
 set_target_properties(DemBonesCmd PROPERTIES OUTPUT_NAME "DemBones")
 
 find_package(TCLAP)
-find_package(Alembic)
-find_package(FBXSDK)
+
+if (DEM_BONES_WITH_ALEMBIC)
+  add_definitions(-DDEM_BONES_ENABLE_ALEMBIC)
+  find_package(Alembic)
+endif (DEM_BONES_WITH_ALEMBIC)
+
+if (DEM_BONES_WITH_FBX)
+  add_definitions(-DDEM_BONES_ENABLE_FBXSDK)
+  find_package(FBXSDK)
+endif (DEM_BONES_WITH_FBX)
 
 target_include_directories(DemBonesCmd PUBLIC
 	"${TCLAP_INCLUDE_DIR}"
@@ -37,7 +49,7 @@ target_include_directories(DemBonesCmd PUBLIC
 	"${ALEMBIC_INCLUDE_DIR}/AlembicPrivate/ilmbase"
 )
 
-target_link_libraries(DemBonesCmd PUBLIC 
+target_link_libraries(DemBonesCmd PUBLIC
 	"${FBXSDK_LIBS}"
 	"${ALEMBIC_LIBS}"
 	"${ZLIB_LIBS}"

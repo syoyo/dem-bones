@@ -3,7 +3,7 @@
 //         Copyright (c) 2019, Electronic Arts. All rights reserved.         //
 ///////////////////////////////////////////////////////////////////////////////
 
-
+#if defined(DEM_BONES_ENABLE_ALEMBIC)
 
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreAbstract/All.h>
@@ -107,7 +107,16 @@ private:
 	AbcGeom::IPolyMeshSchema schema;
 };
 
+#else
+
+#include "AbcReader.h"
+#include "LogMsg.h"
+
+#endif
+
 bool readABCs(const vector<string>& fileNames, DemBonesExt<double, float>& model) {
+
+#if defined(DEM_BONES_ENABLE_ALEMBIC)
 	msg(1, "Checking ABCs:\n");
 
 	model.nS=(int)fileNames.size();
@@ -140,4 +149,8 @@ bool readABCs(const vector<string>& fileNames, DemBonesExt<double, float>& model
 	msg(1, " Done!\n");
 
 	return true;
+#else
+	msg(1, "ABC is not supportd in this build\n");
+	return false;
+#endif
 }

@@ -3,10 +3,11 @@
 //         Copyright (c) 2019, Electronic Arts. All rights reserved.         //
 ///////////////////////////////////////////////////////////////////////////////
 
-
-
 #include "FbxReader.h"
 #include "LogMsg.h"
+
+#if defined(DEM_BONES_ENABLE_FBX)
+
 #include "FbxShared.h"
 #include <Eigen/Dense>
 #include <map>
@@ -37,7 +38,7 @@ public:
 
 		//Scence mush have at least one mesh
 		if (pMesh==NULL) err("Scene has no mesh.\n");
-	
+
 		int nV=(int)pMesh->GetControlPointsCount();
 		FbxVector4* cp=pMesh->GetControlPoints();
 
@@ -75,13 +76,13 @@ public:
 			//Indexing by the order in the skinCluster
 			jointName.resize(nB);
 			for (int j=0; j<nB; j++) jointName[j]=pSkin->GetCluster(j)->GetLink()->GetName();
-	
+
 			for (int j=0; j<nB; j++) {
 				FbxCluster* pCluster=pSkin->GetCluster(j);
-				
+
 				double* val=pCluster->GetControlPointWeights();
 				int* idx=pCluster->GetControlPointIndices();
-				
+
 				int nj=pCluster->GetControlPointIndicesCount();
 				wT[jointName[j]]=VectorXd::Zero(nV);
 				for (int k=0; k<nj; k++) {
@@ -96,12 +97,12 @@ public:
 				pSkin->GetCluster(j)->GetTransformMatrix(mat2);
 				if ((Map<Matrix4d>((double*)(mat1))-Map<Matrix4d>((double*)(mat2))).squaredNorm()>1e-10) err("Multiple bind poses.\n");
 			}
-			pSkin->GetCluster(0)->GetTransformMatrix(gMat);			
+			pSkin->GetCluster(0)->GetTransformMatrix(gMat);
 		}
 
 		Matrix4d gm=Map<Matrix4d>((double*)(gMat));
 		v=(gm*v.colwise().homogeneous()).topRows<3>();
-	
+
 		// Load skeleton (if exists)
 		vector<JointNode> jn(0);
 		travel(lScene->GetRootNode(), NULL, jn);
@@ -178,7 +179,10 @@ private:
 	}
 };
 
+#endif
+
 bool readFBXs(const vector<string>& fileNames, DemBonesExt<double, float>& model) {
+#if defined(DEM_BONES_ENABLE_FBX)
 	if ((int)fileNames.size()!=model.nS) err("Wrong number of FBX files or ABC files have not been loaded.\n");
 
 	msg(1, "Reading FBXs:\n");
@@ -211,11 +215,11 @@ bool readFBXs(const vector<string>& fileNames, DemBonesExt<double, float>& model
 
 			for (int j=0; j<model.nB; j++) {
 				string nj=model.boneName[j];
-				
+
 				model.parent(j)=-1;
 				for (int k=0; k<model.nB; k++)
 					if (model.boneName[k]==importer.parent[nj]) model.parent(j)=k;
-			
+
 				model.bind.blk4(s, j)=importer.bind[nj];
 				model.preMulInv.blk4(s, j)=importer.preMulInv[nj];
 				model.rotOrder.vec3(s, j)=importer.rotOrder[nj];
@@ -261,7 +265,7 @@ bool readFBXs(const vector<string>& fileNames, DemBonesExt<double, float>& model
 
 		for (int j=0; j<model.nB; j++) model.m.block(s*4, j*4, nFr*4, 4)=importer.m[model.boneName[j]];
 		hasKeyFrame|=importer.hasKeyFrame;
-		
+
 		msg(1, "Done!\n");
 	}
 
@@ -275,6 +279,10 @@ bool readFBXs(const vector<string>& fileNames, DemBonesExt<double, float>& model
 	msg(1, "\n");
 
 	return true;
+#else
+  msg(1, "FBX is not supported in this build");
+  return false;
+#endif
 }
 
 #undef err

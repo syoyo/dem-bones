@@ -6,8 +6,11 @@
 
 
 #include "FbxWriter.h"
-#include "FbxShared.h"
 #include "LogMsg.h"
+
+#if defined(DEM_BONES_ENABLE_FBX)
+
+#include "FbxShared.h"
 #include <sstream>
 #include <Eigen/Dense>
 #include <DemBones/MatBlocks.h>
@@ -58,7 +61,7 @@ public:
 	}
 
 	void addToCurve(const VectorXd& val, const VectorXd& fTime, FbxAnimCurve* lCurve) {
-		lCurve->KeyModifyBegin(); 
+		lCurve->KeyModifyBegin();
 		int idx=0;
 		int nFr=(int)fTime.size();
 		FbxTime lTime;
@@ -93,7 +96,7 @@ public:
 			addToCurve(Map<VectorXd, 0, InnerStride<3>>(val.data()+2, val.size()/3), fTime, lSkeleton->LclTranslation.GetCurve(lAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z, true));
 		}
 	}
-	
+
 	void setSkinCluster(const vector<string>& name, const SparseMatrix<double>& w, const MatrixXd& gb) {
 		FbxMesh* lMesh=firstMesh(lScene->GetRootNode());
 
@@ -128,7 +131,7 @@ public:
 			s<<"demCluster"<<j;
 			FbxCluster* lCluster=FbxCluster::Create(lScene, s.str().c_str());
 			FbxNode* lNode=lScene->FindNodeByName(FbxString(name[j].c_str()));
-			
+
 			lCluster->SetLink(lNode);
 			lCluster->SetLinkMode(FbxCluster::eTotalOne);
 			for (SparseMatrix<double>::InnerIterator it(wT, j); it; ++it) lCluster->AddControlPointIndex((int)it.row(), it.value());
@@ -154,7 +157,10 @@ public:
 	}
 };
 
+#endif
+
 bool writeFBXs(const vector<string>& fileNames, const vector<string>& inputFileNames, DemBonesExt<double, float>& model, bool embedMedia) {
+#if defined(DEM_BONES_ENABLE_FBX)
 	msg(1, "Writing outputs:\n");
 
 	if ((int)fileNames.size()!=model.nS) err("Wrong number of FBX files.\n");
@@ -192,4 +198,9 @@ bool writeFBXs(const vector<string>& fileNames, const vector<string>& inputFileN
 	}
 
 	return true;
+#else
+	msg(1, "FBX is not supported in this build\n");
+
+	return false;
+#endif
 }

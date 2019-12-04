@@ -3,7 +3,7 @@
 //         Copyright (c) 2019, Electronic Arts. All rights reserved.         //
 ///////////////////////////////////////////////////////////////////////////////
 
-
+#if defined(DEM_BONES_ENABLE_FBX)
 
 #include "FbxShared.h"
 
@@ -63,3 +63,5 @@ FbxSkin* FbxSceneShared::firstSkin(FbxMesh* pMesh) {
 
 	return NULL;
 }
+
+#endif // DEM_BONES_ENABLE_FBX
