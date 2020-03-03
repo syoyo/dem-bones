@@ -15,7 +15,7 @@ if(WIN32)
 	file(GLOB ALEMBIC_LIBS "${ALEMBIC_LIB_DIR}/*.lib")
 endif()
 
-if(APPLE)
+if(APPLE OR UNIX)
 	find_path(ALEMBIC_LIB_DIR
 		NAMES "libAlembic.a"
 		PATHS "ExtLibs/Alembic/lib"

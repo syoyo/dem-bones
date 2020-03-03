@@ -42,6 +42,8 @@ if (DEM_BONES_WITH_FBX)
   find_package(FBXSDK)
 endif (DEM_BONES_WITH_FBX)
 
+
+
 target_include_directories(DemBonesCmd PUBLIC
 	"${TCLAP_INCLUDE_DIR}"
 	"${FBXSDK_INCLUDE_DIR}"
@@ -52,8 +54,25 @@ target_include_directories(DemBonesCmd PUBLIC
 target_link_libraries(DemBonesCmd PUBLIC
 	"${FBXSDK_LIBS}"
 	"${ALEMBIC_LIBS}"
+	"Half"
+	"Iex"
 	"${ZLIB_LIBS}"
 )
+
+if(UNIX)
+  if (DEM_BONES_WITH_ALEMBIC)
+    # ilmbase component is required
+    # Assume ilmbase is installed in the system(e.g. by apt install in Ubunt)
+    target_include_directories(DemBonesCmd PUBLIC
+          "/usr/include/OpenEXR"
+    )
+
+    target_link_libraries(DemBonesCmd PUBLIC
+          "Half"
+          "Iex"
+    )
+  endif()
+endif()
 
 if(WIN32)
 	find_package(Zlib)
