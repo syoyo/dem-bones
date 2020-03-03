@@ -6,7 +6,7 @@
 #include "FbxReader.h"
 #include "LogMsg.h"
 
-#if defined(DEM_BONES_ENABLE_FBX)
+#if defined(DEM_BONES_ENABLE_FBXSDK)
 
 #include "FbxShared.h"
 #include <Eigen/Dense>
@@ -182,7 +182,7 @@ private:
 #endif
 
 bool readFBXs(const vector<string>& fileNames, DemBonesExt<double, float>& model) {
-#if defined(DEM_BONES_ENABLE_FBX)
+#if defined(DEM_BONES_ENABLE_FBXSDK)
 	if ((int)fileNames.size()!=model.nS) err("Wrong number of FBX files or ABC files have not been loaded.\n");
 
 	msg(1, "Reading FBXs:\n");
@@ -280,7 +280,7 @@ bool readFBXs(const vector<string>& fileNames, DemBonesExt<double, float>& model
 
 	return true;
 #else
-  msg(1, "FBX is not supported in this build");
+  msg(1, "FBX is not supported in this build\n");
   return false;
 #endif
 }

@@ -8,7 +8,7 @@
 #include "FbxWriter.h"
 #include "LogMsg.h"
 
-#if defined(DEM_BONES_ENABLE_FBX)
+#if defined(DEM_BONES_ENABLE_FBXSDK)
 
 #include "FbxShared.h"
 #include <sstream>
@@ -160,7 +160,7 @@ public:
 #endif
 
 bool writeFBXs(const vector<string>& fileNames, const vector<string>& inputFileNames, DemBonesExt<double, float>& model, bool embedMedia) {
-#if defined(DEM_BONES_ENABLE_FBX)
+#if defined(DEM_BONES_ENABLE_FBXSDK)
 	msg(1, "Writing outputs:\n");
 
 	if ((int)fileNames.size()!=model.nS) err("Wrong number of FBX files.\n");

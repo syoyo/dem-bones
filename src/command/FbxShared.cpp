@@ -3,7 +3,7 @@
 //         Copyright (c) 2019, Electronic Arts. All rights reserved.         //
 ///////////////////////////////////////////////////////////////////////////////
 
-#if defined(DEM_BONES_ENABLE_FBX)
+#if defined(DEM_BONES_ENABLE_FBXSDK)
 
 #include "FbxShared.h"
 

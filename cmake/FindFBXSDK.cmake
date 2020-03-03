@@ -1,4 +1,4 @@
-find_path(FBXSDK_INCLUDE_DIR 
+find_path(FBXSDK_INCLUDE_DIR
 	NAMES "fbxsdk.h"
 	PATHS "ExtLibs/FBXSDK/include"
 )
@@ -6,6 +6,7 @@ find_path(FBXSDK_INCLUDE_DIR
 find_library(FBXSDK_LIBS
 	NAMES "libfbxsdk-md.lib" "libfbxsdk.a"
 	PATHS
+		"ExtLibs/FBXSDK/lib/gcc4/x64/release"
 		"ExtLibs/FBXSDK/lib/vs2015/x64/release"
 		"ExtLibs/FBXSDK/lib/clang/release"
 )

@@ -7,6 +7,18 @@ set(CMAKE_CONFIGURATION_TYPES "Release;" CACHE STRING "" FORCE)
 # options
 option(DEM_BONES_WITH_FBX "Enable FBX support." ON)
 option(DEM_BONES_WITH_ALEMBIC "Enable Alembic support." ON)
+option(DEM_BONES_USE_SANITIZER "Enable Address Sanitizer." OFF)
+
+# Sanitizer
+if(DEM_BONES_USE_SANITIZER)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+    message(STATUS "Address/Memory sanitizer: ENABLED")
+else()
+    message(STATUS "Address/Memory sanitizer: DISABLED")
+endif()
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 find_package(Eigen REQUIRED)
@@ -70,8 +82,10 @@ if(UNIX)
     target_link_libraries(DemBonesCmd PUBLIC
           "Half"
           "Iex"
+          ${CMAKE_DL_LIBS}
     )
   endif()
+
 endif()
 
 if(WIN32)

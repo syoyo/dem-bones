@@ -24,6 +24,8 @@ Tested platforms:
 - LLVM 9.0.0 (Homebrew) on MacOS 10.13.6 x64 (experimental).
 - Ubuntu 18.04(experimental)
   - You can use apt install ilmbase and Alembic compiled from the source.
+  - You can use FBXSDK for Linux(Confirmed 2019.0)
+    - You may need to compile DEM-Bones and Alembic using gcc, not clang(since FBXSDK is compiled with gcc4(4.8?))
 
 Compiling steps:
 1. Install [cmake 3.15](https://cmake.org/)
