@@ -10,7 +10,7 @@
 
 #include "DemBones.h"
 
-#include <Eigen/Geometry> 
+#include <Eigen/Geometry>
 
 #ifndef DEM_BONES_MAT_BLOCKS
 #include "MatBlocks.h"
@@ -29,7 +29,7 @@ namespace Dem
 */
 template<class _Scalar, class _AniMeshScalar>
 class DemBonesExt: public DemBones<_Scalar, _AniMeshScalar> {
-public:	
+public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 	using MatrixX=Eigen::Matrix<_Scalar, Eigen::Dynamic, Eigen::Dynamic>;
@@ -48,7 +48,7 @@ public:
 	using DemBones<_Scalar, _AniMeshScalar>::transAffineNorm;
 	using DemBones<_Scalar, _AniMeshScalar>::nWeightsIters;
 	using DemBones<_Scalar, _AniMeshScalar>::nnz;
-	using DemBones<_Scalar, _AniMeshScalar>::weightsSmooth;	
+	using DemBones<_Scalar, _AniMeshScalar>::weightsSmooth;
 	using DemBones<_Scalar, _AniMeshScalar>::weightsSmoothStep;
 	using DemBones<_Scalar, _AniMeshScalar>::weightEps;
 
@@ -81,10 +81,10 @@ public:
 	//! Original bind pre-matrix, [@c size] = [4*#nS, 4*#nB], #bind.@a block(4*@p s, 4*@p j, 4, 4) is the global bind matrix of bone @p j on subject @p s at the rest pose
 	MatrixX bind;
 
-	//! Inverse pre-multiplication matrices, [@c size] = [4*#nS, 4*#nB], #preMulInv.@a block(4*@p s, 4*@p j, 4, 4) is the inverse of pre-local transformation of bone @p j on subject @p s 
+	//! Inverse pre-multiplication matrices, [@c size] = [4*#nS, 4*#nB], #preMulInv.@a block(4*@p s, 4*@p j, 4, 4) is the inverse of pre-local transformation of bone @p j on subject @p s
 	MatrixX preMulInv;
 
-	//! Rotation order, [@c size] = [3*#nS, #nB], #rotOrder.@a col(@p j).@a segment<3>(3*@p s) is the rotation order of bone @p j on subject @p s, 0=@c X, 1=@c Y, 2=@c Z, e.g. {0, 1, 2} is @c XYZ order  
+	//! Rotation order, [@c size] = [3*#nS, #nB], #rotOrder.@a col(@p j).@a segment<3>(3*@p s) is the rotation order of bone @p j on subject @p s, 0=@c X, 1=@c Y, 2=@c Z, e.g. {0, 1, 2} is @c XYZ order
 	Eigen::MatrixXi rotOrder;
 
 	//! Bind transformation update, 0=keep original, 1=set translations to p-norm centroids (using #transAffineNorm) and rotations to identity
@@ -105,12 +105,12 @@ public:
 		bind.resize(0, 0);
 		preMulInv.resize(0, 0);
 		rotOrder.resize(0, 0);
-		DemBones::clear();
+		DemBones<_Scalar, _AniMeshScalar>::clear();
 	}
 
 	/** @brief Local rotations, translations and global bind matrices of a subject
 		@details Required all data in the base class: #u, #fv, #nV, #v, #nF, #fStart, #subjectID, #nS, #m, #w, #nB
-		
+
 		This function will initialize these default values for missing attributes:
 		- #parent: -1 vector, [@c size] = #nB
 		- #preMulInv: 4*4 identity matrix blocks, [@c size] = [4*#nS, 4*#nB]
@@ -145,7 +145,7 @@ public:
 			Matrix4 lb;
 			if (parent(j)==-1) lb=preMulInv.blk4(s, j)*gb.blk4(0, j);
 			else lb=preMulInv.blk4(s, j)*gb.blk4(0, parent(j)).inverse()*gb.blk4(0, j);
-			
+
 			Vector3 curRot=Vector3::Zero();
 			toRot(lb.template topLeftCorner<3, 3>(), curRot, ro);
 			lbr.col(j)=curRot;
@@ -166,7 +166,7 @@ public:
 			lbr*=180/EIGEN_PI;
 		}
 	}
-	
+
 private:
 	/** p-norm centroids (using #transAffineNorm) and rotations to identity
 		@param s is the subject index
@@ -204,7 +204,7 @@ private:
 	/** Euler angles from rotation matrix
 		@param rMat is the 3*3 rotation matrix
 		@param curRot is the input current Euler angles, it is also the by-reference output closet Euler angles correspond to @p rMat
-		@param ro is the rotation order, 0=@c X, 1=@c Y, 2=@c Z, e.g. {0, 1, 2} is @c XYZ order  
+		@param ro is the rotation order, 0=@c X, 1=@c Y, 2=@c Z, e.g. {0, 1, 2} is @c XYZ order
 		@param eps is the epsilon
 	*/
 	void toRot(const Matrix3& rMat, Vector3& curRot, const Eigen::Vector3i& ro, _Scalar eps=_Scalar(1e-10)) {
